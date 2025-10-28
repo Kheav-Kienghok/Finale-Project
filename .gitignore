@@ -30,4 +30,7 @@ coverage
 *.tsbuildinfo
 
 .vscode
-
+*.tar
+*.zip
+*.gz
+pnpm-lock.yaml
