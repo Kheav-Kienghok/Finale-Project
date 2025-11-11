@@ -8,9 +8,14 @@ const email = ref('')
 const password = ref('')
 const remember = ref(false)
 const confirmPassword = ref('')
+const needVerifyEmail = ref(false)
+const isLoading = ref(false)
+const errorMsg = ref('')
+const showPassword = ref(null)
 
 const handleSubmit = async () => {
   try {
+    isLoading.value = true
     const registerObj = {
       fullname: username.value,
       email: email.value,
@@ -21,11 +26,12 @@ const handleSubmit = async () => {
       email: email.value,
       password: password.value,
     })
-    if (resp.data.success) {
-      console.log(resp.data)
+    if (resp.data.status == 'Created') {
+      needVerifyEmail.value = true
     }
-    console.log(resp)
   } catch (err) {
+    isLoading.value = false
+    errorMsg.value = err.response.data.message
     console.log('Erorr registering user: ', err)
   }
 }
@@ -77,7 +83,6 @@ onMounted(async () => {
   const passwordInput = document.getElementById('password')
   const confirmpasswordInput = document.getElementById('confirmpassword')
   const passwordMeter = document.getElementById('password-meter')
-  const showPasswordCheckbox = document.getElementById('show-password')
 
   passwordInput.addEventListener('input', () => {
     const password = passwordInput.value
@@ -91,9 +96,9 @@ onMounted(async () => {
       passwordError.value = passwordInput.title
     }
   })
-  showPasswordCheckbox.addEventListener('change', () => {
-    passwordInput.type = showPasswordCheckbox.checked ? 'text' : 'password'
-    confirmpassword.type = showPasswordCheckbox.checked ? 'text' : 'password'
+  showPassword.value.addEventListener('change', () => {
+    passwordInput.type = showPassword.value.checked ? 'text' : 'password'
+    confirmpassword.type = showPassword.value.checked ? 'text' : 'password'
   })
   function getPasswordStrength(password) {
     let score = 0
@@ -115,13 +120,24 @@ onMounted(async () => {
 })
 </script>
 <template>
-  <div class="w-full max-h-full">
+  <div class="w-full h-200">
+    <div v-if="needVerifyEmail" class="h-full w-full flex items-center justify-center flex-col">
+      <p class="text-4xl/relaxed text-center max-w-[70%]">
+        We've sent a verification email to your inbox. Please check your email and follow the
+        instructions to verify your account.
+      </p>
+      <router-link to="/" class="mx-auto mt-5 button"><span>Back To Home</span></router-link>
+    </div>
     <div
+      v-else
       class="mx-auto border-1 mt-17 my-auto p-10 w-300 rounded-md bg-base-100 grid grid-cols-2 rgbBlock"
     >
       <!-- add image here -->
       <div class="col-start-1">
         <h1 class="text-center text-4xl font-extrabold">Create Account</h1>
+        <p v-if="errorMsg" class="bg-red-400 text-center mt-[16px] p-5 rounded-lg">
+          {{ errorMsg }}
+        </p>
         <p class="text-center front-normal text-gray-400 text-sm mt-4">Or signup with</p>
         <form @submit.prevent="handleSubmit" class="flex flex-col mt-9 items-center gap-10">
           <label for="username">
@@ -180,32 +196,41 @@ onMounted(async () => {
                 placeholder="password"
               />
             </label>
-            <div id="password-meter" class="text-black p-2 rounded-lg"></div>
+            <div
+              id="password-meter"
+              class="text-black font-extrabold text-center p-2 rounded-lg mt-4"
+            ></div>
           </div>
-          <label for="confirmpassword">
-            <input
-              type="password"
-              v-model="confirmPassword"
-              id="confirmpassword"
-              name="confirmpassword"
-              class="input input-primary"
-              required
-              placeholder="confirm password"
-              minlength="8"
-              pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
-              title="Must contain at least one number, one uppercase and one lowercase letter, and at least 12 or more characters"
-            />
-          </label>
-          <label for="show-password" class="flex justify-center items-center gap-4 mt-3">
-            <input type="checkbox" id="show-password" />
-            <p class="text-gray-400/50">Show password</p>
-          </label>
-          <span v-if="password != confirmPassword" class="input input-error">
-            The password does not match
-          </span>
+          <div>
+            <label for="confirmpassword">
+              <input
+                type="password"
+                v-model="confirmPassword"
+                id="confirmpassword"
+                name="confirmpassword"
+                class="input input-primary"
+                required
+                placeholder="confirm password"
+                minlength="8"
+                pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+                title="Must contain at least one number, one uppercase and one lowercase letter, and at least 12 or more characters"
+              />
+            </label>
+            <label for="show-password" class="flex justify-center items-center gap-4 mt-3">
+              <input type="checkbox" ref="showPassword" />
+              <p class="text-gray-400/50">Show password</p>
+            </label>
+          </div>
+          <div v-if="password != confirmPassword">
+            <span class="input input-error text-center"> The password does not match </span>
+          </div>
           <div class="flex gap-2 text-sm">
             <p>Already have an account?</p>
             <RouterLink to="/login" class="underline text-blue-400">Login Here</RouterLink>
+          </div>
+          <div v-if="isLoading" class="flex gap-3 items-center">
+            <div class="loading loading-dots"></div>
+            <p>Please wait for a moment</p>
           </div>
           <button type="submit" class="button"><span>Sign Up</span></button>
         </form>

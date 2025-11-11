@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
 import { RouterLink, useRouter } from 'vue-router'
 import { token, setToken } from '@/lib/helper.js'
@@ -9,6 +9,10 @@ import { isAuthenticate } from '@/lib/helper.js'
 const email = ref('')
 const errorState = ref('')
 const password = ref('')
+const passwordInput = ref(null)
+const showPassword = ref(null)
+const isLoading = ref(false)
+
 const remember = ref(false)
 const router = useRouter()
 
@@ -18,6 +22,7 @@ const handleSubmit = async () => {
     password: password.value,
   }
   try {
+    isLoading.value = true
     const resp = await axios.post('https://eduvision.live/api/login', loginObj)
     if (resp.data.success) {
       const jwtToken = resp.data.data.token
@@ -25,11 +30,17 @@ const handleSubmit = async () => {
       router.push({ name: 'home' })
     }
   } catch (err) {
+    isLoading.value = false
     if (err.status === 401) {
       errorState.value = "Your credentials doesn't match our records."
     }
   }
 }
+onMounted(() => {
+  showPassword.value.addEventListener('change', () => {
+    passwordInput.value.type = showPassword.value.checked ? 'text' : 'password'
+  })
+})
 </script>
 <template>
   <div class="w-full h-screen">
@@ -58,6 +69,7 @@ const handleSubmit = async () => {
             <input
               type="password"
               v-model="password"
+              ref="passwordInput"
               id="password"
               name="password"
               class="input input-primary"
@@ -65,9 +77,18 @@ const handleSubmit = async () => {
               placeholder="........"
             />
           </label>
+          <div class="flex gap-3 items-center">
+            <input type="checkbox" ref="showPassword" />
+            <label for="showPassword">Show Password</label>
+          </div>
           <div class="flex gap-2 text-sm">
             <p>Don't have an account?</p>
             <RouterLink to="/register" class="underline text-blue-400">Register Here</RouterLink>
+          </div>
+
+          <div v-if="isLoading" class="flex gap-3 items-center">
+            <div class="loading loading-dots"></div>
+            <p>Please wait for a moment</p>
           </div>
           <button type="submit" class="btn btn-primary">Login</button>
         </form>

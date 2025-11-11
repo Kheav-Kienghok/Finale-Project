@@ -309,6 +309,8 @@ onMounted(() => {
   }
 
   tick()
+  const cookies = document.cookie
+  console.log(cookies)
   onBeforeUnmount(() => {
     cancelAnimationFrame(animationId)
     if (renderer) {
