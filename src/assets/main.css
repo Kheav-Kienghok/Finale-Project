@@ -9,7 +9,7 @@
 .custom-dark {
   color: white;
   position: relative;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.9);
   border-radius: 4px;
 }
 
@@ -66,6 +66,7 @@
 
 .button {
   padding: 0.1em 0.25em;
+  font-family: corben, sans-serif;
   width: 13em;
   height: 4.2em;
   background-color: #212121;

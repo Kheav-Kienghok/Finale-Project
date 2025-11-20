@@ -76,10 +76,10 @@ const handleSubmit = async () => {
     loading.value = false
   }
 }
-const handleBeforeUnload = (e) => {
-  e.preventDefault()
-  e.returnValue = ''
-}
+// const handleBeforeUnload = (e) => {
+//   e.preventDefault()
+//   e.returnValue = ''
+// }
 const handleVerify2FA = async () => {
   try {
     loading.value = true
@@ -118,7 +118,9 @@ const handleVerification = async () => {
     )
     console.log(resp.data)
     if (resp.data.success) {
-      router.push({ name: 'AdminLogin' })
+      loading.value = false
+      // router.push({ name: 'AdminLogin' })
+      window.location.reload()
     }
   } catch (err) {
     loading.value = false
@@ -126,12 +128,6 @@ const handleVerification = async () => {
     console.log('Error verification', err)
   }
 }
-onMounted(() => {
-  window.addEventListener('beforeunload', handleBeforeUnload)
-})
-onBeforeUnmount(() => {
-  window.removeEventListener('beforeunload', handleBeforeUnload)
-})
 </script>
 <template>
   <div class="w-full h-screen">

@@ -3,13 +3,23 @@ import { reactive, onMounted, ref, computed, watch, onBeforeUnmount } from 'vue'
 import axios from 'axios'
 import { useDataStore } from '@/stores/dataStore'
 import { useRoute, useRouter } from 'vue-router'
+import { useToast } from 'primevue/usetoast'
 
 import * as THREE from 'three'
 import { TTFLoader } from 'three/examples/jsm/loaders/TTFLoader'
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js'
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js'
 
-// import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+const storage = localStorage
+
+const toast = useToast()
+const show = () => {
+  toast.add({ severity: 'success', summary: 'Added to Favorite Succuessfully', life: 3000 })
+}
+const showError = () => {
+  toast.add({ severity: 'warn', summary: 'You are not logged in.', life: 3000 })
+}
+
 let scholarships = ref([])
 const dataStore = useDataStore()
 const router = useRouter()
@@ -29,9 +39,6 @@ const handleSearch = () => {
     return scholarship.provider.toLowerCase().includes(searchQuery.value.toLowerCase())
   })
 }
-// computed(() => {
-//   scholarships.value = handleSearch()
-// })
 
 watch(
   () => router.currentRoute.value,
@@ -59,12 +66,42 @@ const fetchData = async () => {
     console.log('error fetching data', err)
   }
 }
-const handleAddFavorite = async (dat) => {
+const isFavorite = ref(false)
+const jwt = localStorage.getItem('jwt')
+const handleAddFavorite = async (id) => {
   try {
-    // axios.post("/favorite")
-    console.log(dat)
+    const resp = await axios.post(
+      'https://eduvision.live/api/favorite',
+      { scholarship_id: id },
+      {
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+        },
+      },
+    )
+    if (resp.data.success) {
+      localStorage.setItem(id, true)
+      window.location.reload()
+    }
   } catch (err) {
-    console.log(err)
+    showError()
+    console.log('Error adding favorite: ', err)
+  }
+}
+const handleDeleteFavorite = async (id) => {
+  try {
+    const resp = await axios.delete(`https://eduvision.live/api/favorite/${id}`, {
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+      },
+    })
+    if (resp.data.success) {
+      localStorage.removeItem(id)
+      window.location.reload()
+    }
+  } catch (err) {
+    showError()
+    console.log('Error deleting favotire', err)
   }
 }
 
@@ -219,16 +256,20 @@ onMounted(async () => {
             <label for="sort" class="cursor-pointer">
               <div class="flex items-center gap-4">
                 <i class="pi pi-sort-amount-down text-2xl"></i>
-                <p class="text-2xl">Sort</p>
+                <p class="text-lg font-corben">Sort</p>
               </div>
             </label>
             <ul
               class="absolute invisible group-hover:visible w-50 h-fit flex flex-col top-[100%] left-[50%] -translate-x-[50%] bg-[#793ef9] items-center py-4 rounded-lg"
             >
-              <li class="hover:bg-gray-400/80 w-full text-center py-2 cursor-pointer rounded-lg">
+              <li
+                class="hover:bg-gray-400/80 w-full font-corben text-center py-2 cursor-pointer rounded-lg"
+              >
                 Newest
               </li>
-              <li class="hover:bg-gray-400/80 w-full text-center py-2 cursor-pointer rounded-lg">
+              <li
+                class="hover:bg-gray-400/80 w-full text-center font-corben py-2 cursor-pointer rounded-lg"
+              >
                 Oldest
               </li>
             </ul>
@@ -237,11 +278,11 @@ onMounted(async () => {
             <label for="filter" class="cursor-pointer">
               <div class="flex items-center gap-4">
                 <i class="pi pi-filter-fill text-2xl"></i>
-                <p class="text-2xl">Filter</p>
+                <p class="text-lg font-corben">Filter</p>
               </div>
             </label>
             <ul
-              class="absolute invisible group-hover:visible w-50 h-fit flex flex-col bg-[#793ef9] items-center py-4 rounded-lg top-[100%] left-[50%] translate-x-[-50%]"
+              class="absolute font-corben invisible group-hover:visible w-50 h-fit flex flex-col bg-[#793ef9] items-center py-4 rounded-lg top-[100%] left-[50%] translate-x-[-50%]"
             >
               <li class="hover:bg-gray-400/80 w-full text-center py-2 cursor-pointer rounded-lg">
                 School
@@ -263,7 +304,7 @@ onMounted(async () => {
       <div class="border-1 border-white/50 rounded-lg md:hidden">
         <div class="max-h-[500px] overflow-y-scroll arounded-lg p-6 flex flex-col items-center">
           <img :src="`${dat.photo_url}`" alt="" class="w-[200px] rounded-lg" />
-          <p class="text-sm/relaxed text-center mt-4">{{ dat.title }}</p>
+          <p class="text-sm/relaxed text-center mt-4">{ dat.title }</p>
           <div
             v-if="dat.provider"
             class="font-extrabold mt-4 p-4 relative after:absolute after:content-[''] after:border-t-[0.5px] after:border-white/50 after:left-10 after:right-10 after:bottom-10 after:-z-2 after:inset-0 w-full"
@@ -342,37 +383,56 @@ onMounted(async () => {
           :style="{ backgroundImage: `url('/logo.png')` }"
         ></div>
         <div class="w-full absolute inset-0 text-white flex-col items-center">
-          <div class="max-h-[815px] custom-dark m-10 overflow-y-scroll">
+          <div class="h-full custom-dark overflow-y-scroll">
             <h1
-              class="text-3xl/relaxed mx-auto border-1 rounded-lg border-gray-400/50 p-6 max-w-[90%] text-center font-extrabold font-corben mt-9 bg-gray-900/50"
+              class="text-3xl tracking-wide text-[#00bfff] mx-auto border-1 rounded-lg border-gray-400/50 p-6 max-w-[90%] text-center font-semibold font-corben mt-9 bg-gray-900/50"
             >
               {{ dat.title }}
+              <Toast />
+              <div
+                v-if="storage.getItem(dat.id) !== 'true'"
+                class="pi pi-heart w-20 cursor-pointer"
+                @click="handleAddFavorite(dat.id)"
+              ></div>
+              <div
+                v-if="storage.getItem(dat.id) === 'true'"
+                class="pi pi-heart-fill w-20 cursor-pointer"
+                @click="handleDeleteFavorite(dat.id)"
+              ></div>
             </h1>
-            <div class="text-xl/13 p-9 ml-10 mr-10 mt-7 mb-5">
-              <p v-if="dat.deadline_end" class="font-extrabold italic">
-                <span class="font-bold mr-3 not-italic">Deadline:</span
-                ><span class="font-extrabold text-red-400 underline">{{
+            <div class="text-lg/loose p-9 ml-10 mr-10 mt-7 mb-5">
+              <p v-if="dat.deadline_end" class="italic">
+                <span class="text-[#00bfff] mr-3 not-italic font-semibold tracking-wide"
+                  >Deadline: </span
+                ><span class="font-extrabold text-red-400">{{
                   new Date(dat.deadline_end).toDateString()
                 }}</span>
               </p>
-              <p v-if="dat.provider" class="text-xl font-bold">
-                <span v-if="dat.provider" class="mr-2">PROVIDER:</span
+              <p v-if="dat.provider" class="">
+                <span v-if="dat.provider" class="mr-2 text-[#00bfff] font-semibold tracking-wide"
+                  >Provider: </span
                 ><a :href="dat.official_link">{{ dat.provider }}</a>
               </p>
               <p v-if="dat.description">
-                <span v-if="dat.description" class="text-xl font-bold mr-2">DESCRIPTION:</span
+                <span v-if="dat.description" class="text-[#00bfff] font-semibold tracking-wide mr-2"
+                  >Description: </span
                 >{{ dat.description }}
               </p>
               <p
                 v-if="dat.requirements"
-                class="text-center relative after:content-[''] mt-4 after:left-30 after:right-30 after:top-0 pt-4 after:bottom-0 after:opacity-30 after:border-t-2 after:absolute font-bold"
+                class="text-center font-corben tracking-wide text-xl relative after:content-[''] mt-4 after:left-30 after:right-30 after:top-0 pt-4 after:bottom-0 after:opacity-30 after:border-t-2 after:absolute font-semibold text-[#00bfff]"
               >
-                REQUIREMENTS
+                Requirements
               </p>
               <div v-if="dat.requirements" v-for="(val, k, idx) in dat.requirements">
-                <span class="font-bold mr-2">{{
-                  `${k.split('_').join(' ').toUpperCase()} :`
-                }}</span>
+                <span class="text-[#00bfff] mr-3 not-italic font-semibold tracking-wide"
+                  >{{
+                    k
+                      .split('_')
+                      .map((item) => item.charAt(0).toUpperCase() + item.slice(1))
+                      .join(' ')
+                  }}:</span
+                >
                 <ul
                   class="ml-5 list-disc"
                   v-if="typeof val === 'object' && val !== null"
@@ -383,14 +443,24 @@ onMounted(async () => {
                 <li v-else class="ml-6">{{ val }}</li>
               </div>
               <p
-                v-if="dat.institution_info"
-                class="text-center relative after:content-[''] after:left-30 after:right-30 after:top-0 after:bottom-0 after:opacity-30 after:border-t-2 after:absolute mt-3 font-bold"
+                v-if="dat.requirements"
+                class="text-center font-corben tracking-wide text-xl relative after:content-[''] mt-4 after:left-30 after:right-30 after:top-0 pt-4 after:bottom-0 after:opacity-30 after:border-t-2 after:absolute font-semibold text-[#00bfff]"
               >
-                INSTITUTION INFO:
+                Institution Information
               </p>
               <div v-if="dat.institution_info" v-for="(val, k, idx) in dat.institution_info">
-                <p v-if="val.institution" class="font-bold italic">Name: {{ val.institution }}</p>
-                <p v-if="val.programs_offered" class="font-bold italic">Program Offred:</p>
+                <p v-if="val.institution" class="">
+                  <span class="text-[#00bfff] mr-3 not-italic font-semibold tracking-wide"
+                    >Name:</span
+                  >
+                  {{ val.institution }}
+                </p>
+                <p
+                  v-if="val.programs_offered"
+                  class="text-[#00bfff] mr-3 not-italic font-semibold tracking-wide"
+                >
+                  Program Offred:
+                </p>
                 <ul
                   v-if="val.programs_offered"
                   class="ml-5 list-disc"

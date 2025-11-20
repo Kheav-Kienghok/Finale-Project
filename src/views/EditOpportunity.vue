@@ -114,144 +114,168 @@ onMounted(async () => {
 </script>
 <template>
   <div class="w-[75%] h-fit mx-auto mb-10">
-    <h1 class="text-center text-4xl w-full mt-4 font-extralight font-ultra">Edit Page</h1>
+    <h1 class="text-center text-[#00bfff] text-4xl w-full mt-4 font-extralight font-ultra">
+      Edit Page
+    </h1>
     <div
       v-for="opportunity in flat_opportunity"
-      class="text-2xl/relaxed flex flex-col items-start gap-10 mt-15 h-fit border-1 p-10 rounded-lg"
+      class="flex flex-col items-start gap-10 mt-15 h-fit border-1 text-lg/relaxed p-10 rounded-lg"
     >
-      <div class="flex items-center w-fit">
-        <p class="mr-4">Title:</p>
+      <p
+        class="text-center border-t-gray-400/50 text-[#00bfff] font-corben text-2xl border-t-1 max-w-fit block mx-auto py-5"
+      >
+        Basic Information
+      </p>
+      <div class="mx-auto flex items-baseline w-[60%] justify-between">
+        <p class="text-[#00bfff] font-corben">Title:</p>
         <input
           type="text"
           v-if="isEditingTitle"
           @keyup.enter="isEditingTitle = false"
           v-model="opportunity.title"
-          class="text-2xl input input-primary"
+          class="input input-primary w-150 text-lg/relaxed"
         />
-        <p v-else @click="isEditingTitle = true">{{ opportunity.title }}</p>
+        <p v-else @click="isEditingTitle = true" class="w-150 text-lg/relaxed">
+          {{ opportunity.title }}
+        </p>
       </div>
 
-      <div class="flex items-center">
-        <p class="mr-4">Deadline:</p>
+      <div class="mx-auto flex items-baseline w-[60%] justify-between">
+        <p class="text-[#00bfff] font-corben">Deadline:</p>
         <input
           type="date"
           v-if="isEditingDeadline"
           @keyup.enter="isEditingDeadline = false"
           v-model="opportunity.deadline_end"
-          class="text-2xl input input-primary w-[90%]"
+          class="input input-primary w-150 text-lg/relaxed"
         />
-        <p v-else @click="isEditingDeadline = true">{{ opportunity.deadline_end }}</p>
+        <p v-else @click="isEditingDeadline = true" class="w-150 text-lg/relaxed">
+          {{ opportunity.deadline_end }}
+        </p>
       </div>
 
-      <div class="flex items-center">
-        <p class="mr-4">Provider:</p>
+      <div class="mx-auto flex items-baseline w-[60%] justify-between">
+        <p class="text-[#00bfff] font-corben">Provider:</p>
         <input
           type="text"
           v-if="isEditingProvider"
           @keyup.enter="isEditingProvider = false"
           v-model="opportunity.provider"
-          class="text-2xl input input-primary w-[90%]"
+          class="text-lg/relaxed w-150 input input-primary"
         />
-        <p v-else @click="isEditingProvider = true">{{ opportunity.provider }}</p>
+        <p v-else @click="isEditingProvider = true" class="w-150 text-lg/relaxed">
+          {{ opportunity.provider }}
+        </p>
       </div>
 
-      <div class="flex items-center">
-        <p class="mr-4">Description:</p>
+      <div class="mx-auto flex items-baseline w-[60%] justify-between">
+        <p class="text-[#00bfff] font-corben">Description:</p>
         <textarea
           v-if="isEditingDescription"
           @keyup.enter="isEditingDescription = false"
           v-model="opportunity.description"
-          class="text-2xl/relaxed p-3 rounded-lg border-1"
-          cols="30"
-          rows="5"
+          class="text-lg/relaxed p-3 rounded-lg w-150 border-1 border-[#605efe] focus:border-[#605efe] focus:outline-none focus:ring-0"
+          cols="10"
+          rows="4"
         ></textarea>
-        <p v-else @click="isEditingDescription = true">{{ opportunity.description }}</p>
+        <p v-else @click="isEditingDescription = true" class="w-150 text-lg/relaxed">
+          {{ opportunity.description }}
+        </p>
       </div>
 
-      <p class="text-center border-t-gray-400/50 border-t-1 max-w-fit block mx-auto py-5">
+      <p
+        class="text-center border-t-gray-400/50 text-[#00bfff] font-corben text-2xl border-t-1 max-w-fit block mx-auto py-5"
+      >
         Institution Info
       </p>
 
-      <div class="flex items-center">
-        <p class="mr-4">SchoolName:</p>
+      <div class="mx-auto flex items-baseline w-[60%] justify-between">
+        <p class="text-[#00bfff] font-corben">SchoolName:</p>
         <input
           type="text"
           v-if="isEditingSchoolName"
           @keyup.enter="isEditingSchoolName = false"
           v-model="opportunity.institution_info0_institution"
-          class="text-2xl input input-primary w-[90%]"
+          class="text-lg/relaxed input input-primary w-150"
         />
-        <p v-else @click="isEditingSchoolName = true">
+        <p v-else @click="isEditingSchoolName = true" class="w-150 text-lg/relaxed">
           {{ opportunity.institution_info0_institution }}
         </p>
       </div>
 
-      <div class="flex items-center">
-        <p class="mr-4 min-w-fit">Programs Offered:</p>
+      <div class="mx-auto flex items-baseline w-[60%] justify-between">
+        <p class="text-[#00bfff] font-corben">Programs Offered:</p>
         <textarea
           v-if="isEditingProgramOffered"
           @keyup.enter="isEditingProgramOffered = false"
           v-model="opportunity.institution_info0_programs_offered"
-          class="text-2xl/relaxed rounded-lg p-3 border-1"
-          cols="30"
-          rows="5"
+          class="text-lg/relaxed w-150 rounded-lg p-3 border-1 border-[#605efe] focus:border-[#605efe] focus:outline-none focus:ring-0"
+          cols="20"
+          rows="4"
         ></textarea>
-        <p v-else @click="isEditingProgramOffered = true">
+        <p v-else @click="isEditingProgramOffered = true" class="w-150 text-lg/relaxed">
           {{ opportunity.institution_info0_programs_offered }}
         </p>
       </div>
 
-      <p class="text-center border-t-gray-400/50 border-t-1 max-w-fit block mx-auto py-5">
+      <p
+        class="text-center border-t-gray-400/50 text-2xl font-corben text-[#00bfff] border-t-1 max-w-fit block mx-auto py-5"
+      >
         Requirements Info
       </p>
 
-      <div class="flex items-center">
-        <p class="mr-4 min-w-fit">Eligibility:</p>
+      <div class="flex items-baseline w-[60%] mx-auto justify-between">
+        <p class="text-[#00bfff] font-corben">Eligibility:</p>
         <textarea
           v-if="isEditingEligibility"
           @keyup.enter="isEditingEligibility = false"
           v-model="opportunity.requirements_eligibility"
-          class="text-2xl/relaxed rounded-lg p-3 border-1"
-          cols="30"
-          rows="5"
+          class="w-150 text-lg/relaxed rounded-lg p-3 border-1 border-[#605efe] focus:border-[#605efe] focus:outline-none focus:ring-0"
+          cols="40"
+          rows="4"
         ></textarea>
-        <p v-else @click="isEditingEligibility = true">
+        <p v-else @click="isEditingEligibility = true" class="w-150 text-lg/relaxed">
           {{ opportunity.requirements_eligibility }}
         </p>
       </div>
 
-      <div class="flex items-center">
-        <p class="mr-4 min-w-fit">Required Documents:</p>
+      <div class="flex items-baseline w-[60%] justify-between mx-auto">
+        <p class="font-corben text-[#00bfff]">Required Documents:</p>
         <textarea
           v-if="isEditingRequiredDocs"
           @keyup.enter="isEditingRequiredDocs = false"
           v-model="opportunity.requirements_required_documents"
-          class="text-2xl/relaxed border-1 rounded-lg p-3"
-          cols="30"
-          rows="5"
+          class="w-150 text-lg/relaxed border-1 rounded-lg p-3 border-[#605efe] focus:border-[#605efe] focus:outline-none focus:ring-0"
+          cols="40"
+          rows="4"
         ></textarea>
-        <p v-else @click="isEditingRequiredDocs = true">
+        <p v-else @click="isEditingRequiredDocs = true" class="w-150 text-lg/relaxed">
           {{ opportunity.requirements_required_documents }}
         </p>
       </div>
 
-      <div class="flex items-center">
-        <p class="mr-4 min-w-fit">Official Link:</p>
+      <div class="flex items-baseline w-[60%] justify-between mx-auto">
+        <p class="font-corben text-[#00bfff]">Official Link:</p>
         <input
           type="text"
           v-if="isEditingOfficialLink"
           @keyup.enter="isEditingOfficialLink = false"
           v-model="opportunity.official_link"
-          class="text-2xl input input-primary w-[90%]"
+          class="text-lg input input-primary w-150"
         />
-        <p v-else @click="isEditingOfficialLink = true">
+        <p v-else @click="isEditingOfficialLink = true" class="w-150 text-lg/relaxed">
           {{ opportunity.official_link }}
         </p>
       </div>
 
-      <div class="flex items-center">
-        <p class="mr-4">Photo:</p>
-        <input type="file" accept=".jpg, .jpeg, .png" multiple />
+      <div class="flex items-baseline w-[60%] justify-between mx-auto">
+        <p class="text-[#00bfff] font-corben">Photo:</p>
+        <input
+          type="file"
+          accept=".jpg, .jpeg, .png"
+          multiple
+          class="w-150 border-[#605efe] focus:border-[#605efe] focus:outline-none focus:ring-0"
+        />
       </div>
       <button class="button w-full mx-auto" @click="handleSubmit(2)">
         <span>Submit</span>

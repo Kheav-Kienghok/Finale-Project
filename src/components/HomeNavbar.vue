@@ -2,6 +2,7 @@
 import { ref, onMounted, watch, computed } from 'vue'
 import { isAuthenticate, getUserName, checkExpired, logout, token } from '@/lib/helper.js'
 import { useRouter } from 'vue-router'
+import { jwtDecode } from 'jwt-decode'
 
 const router = useRouter()
 const authenticated = ref()
@@ -9,17 +10,17 @@ const name = ref('')
 watch(
   () => router.currentRoute.value,
   (newRoute) => {
-    if (newRoute.name == 'home') {
-      const username = getUserName()
-      name.value = username
-      authenticated.value = isAuthenticate()
-    }
+    const username = getUserName()
+    name.value = username
+    authenticated.value = isAuthenticate()
   },
 )
 
 const handleLogout = () => {
   authenticated.value = false
+  localStorage.removeItem('jwt')
   logout()
+  window.location.reload()
 }
 </script>
 <template>
@@ -107,7 +108,9 @@ const handleLogout = () => {
         <button @click="handleLogout" class="button"><span>Logout</span></button>
       </div>
       <div class="flex gap-3 items-center" v-else>
-        <router-link class="button" to="/login"><span>Login</span></router-link>
+        <router-link class="button" to="/login" @click="console.log('click')"
+          ><span>Login</span></router-link
+        >
         <router-link class="button" to="/register"><span>Sign Up</span></router-link>
       </div>
     </div>
