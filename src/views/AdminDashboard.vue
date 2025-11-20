@@ -6,9 +6,29 @@ import axios from 'axios'
 const allScholarships = ref([])
 const fetchData = async () => {
   const resp = await axios.get('https://eduvision.live/api/scholarships')
-  console.log(resp.data)
   if (resp.data.success) {
     allScholarships.value = resp.data.data
+  }
+}
+const token = localStorage.getItem('token') || ''
+const handleDelete = async (id) => {
+  const confirmed = confirm('Are you sure you want to delete this? This action cannot be undone.')
+  if (confirmed) {
+    try {
+      console.log(id)
+      const resp = await axios.delete(`https://eduvision.live/api/scholarships/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      if (resp.data.success) {
+        window.location.reload()
+      }
+    } catch (err) {
+      console.log('Error deleting opportunity', err)
+    }
+  } else {
+    return
   }
 }
 
@@ -27,7 +47,7 @@ onMounted(async () => {
         >
           Edit
         </button>
-        <button class="btn btn-primary">Delete</button>
+        <button class="btn btn-primary" @click="handleDelete(scholarship.id)">Delete</button>
       </div>
       <div class="mt-6 flex flex-col items-start gap-4">
         <p class="">

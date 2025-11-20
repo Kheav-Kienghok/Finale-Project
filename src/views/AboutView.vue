@@ -101,10 +101,8 @@
         class="col-start-2 row-start-2 my-auto rounded-lg max-w-[80%] mx-auto"
       />
     </div>
-    <div class="w-full flex justify-center">
-      <a href="mailto:lottolaaa@gmail.com" class="btn btn-primary mx-auto text-sm md:text-xl mb-10"
-        >CONTACT US</a
-      >
-    </div>
+    <router-link to="/contact" class="w-full flex justify-center mb-10">
+      <button class="button"><span>Contact US</span></button>
+    </router-link>
   </div>
 </template>

@@ -7,6 +7,15 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Corben:wght@400;700&family=Pacifico&family=Ultra&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+  (function () {
+    var m = localStorage.getItem('color-scheme');
+    var html = document.documentElement;
+    // If you use Tailwind-only, remove any leftover daisyUI theme:
+    html.removeAttribute('data-theme');
+    html.classList.toggle('dark', m === 'dark');
+  })();
+</script>
     <title>Vite App</title>
   </head>
   <body>

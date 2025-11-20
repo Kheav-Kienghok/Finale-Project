@@ -1,52 +1,19 @@
 <script setup>
 import { ref, onMounted, reactive } from 'vue'
 import axios from 'axios'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 const router = useRouter()
-const allOpportunities = ref({})
+const route = useRoute()
+const id = route.query.id
+const opportunity = ref({})
+const flat_opportunity = ref(null)
 const fetchData = async () => {
-  const resp = await axios.get('https://eduvision.live/api/scholarships')
-  allOpportunities.value = resp.data.data
-  console.log(allOpportunities.value)
+  const resp = await axios.get(`https://eduvision.live/api/scholarships/${id}`)
+  opportunity.value = resp.data.data
 }
 const editObj = reactive({
   title: String,
 })
-
-let opportunity = {
-  id: 10,
-  title: 'Paragon International University Departmental Scholarship 2025',
-  provider: 'Paragon International University',
-  description:
-    'The Departmental Scholarship offers up to 100% tuition support for high-performing high school graduates who wish to pursue studies in Economics at Paragon International University.',
-  institution_info: [
-    {
-      institution: 'Paragon International University',
-      programs_offered: [
-        'Bachelor of Arts in Economics',
-        'Bachelor of Science in Economics and Finance',
-        'Bachelor of Social Sciences in Economics',
-      ],
-    },
-  ],
-  requirements: {
-    eligibility: [
-      'Applicants must not be currently enrolled at Paragon International University',
-      'Applicants must have passed the national Bac II exam',
-      'Preference given to students with strong performance in Mathematics, Economics, and Social Sciences',
-    ],
-    required_documents: [
-      'Personal statement explaining motivation for studying Economics',
-      'High school transcript',
-      'Certificate of academic or extracurricular achievements (if any)',
-    ],
-  },
-  official_link: 'https://forms.gle/sdXkxBpbethdzAWt8',
-  deadline_end: '2025-12-31',
-  photo_url:
-    'https://scholarshipbucket2025.s3.ap-southeast-1.amazonaws.com/scholarship_logo/paragon_international_university_departmental_scholarship_2025.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Checksum-Mode=ENABLED\u0026X-Amz-Credential=AKIATCLDGSNFVSBDOTGK%2F20251022%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Date=20251022T020140Z\u0026X-Amz-Expires=86400\u0026X-Amz-SignedHeaders=host\u0026response-content-disposition=inline%3B%20filename%3D%22scholarship_logo%2Fparagon_international_university_departmental_scholarship_2025.jpg%22\u0026response-content-type=image%2Fpng\u0026x-id=GetObject\u0026X-Amz-Signature=498337677bb9926a2b16f039fc108d6af67cc13b7d22b72a746df863de875cad',
-  created_at: '2025-10-16',
-}
 
 function flattenObject(obj, parentKey = '', result = {}) {
   for (const [key, value] of Object.entries(obj)) {
@@ -112,9 +79,6 @@ function unflattenObject(flat) {
   return result
 }
 
-const flat_opportunity = [flattenObject(opportunity)]
-console.log(flat_opportunity)
-
 const isEditingTitle = ref(false)
 const isEditingDeadline = ref(false)
 const isEditingProvider = ref(false)
@@ -125,13 +89,27 @@ const isEditingEligibility = ref(false)
 const isEditingRequiredDocs = ref(false)
 const isEditingOfficialLink = ref(false)
 
-const handleSubmit = () => {
-  const unflattenObj = unflattenObject(flat_opportunity[0])
-  console.log(unflattenObj)
+const handleSubmit = async () => {
+  const unflattenObj = unflattenObject(flat_opportunity.value[0])
+  const token = localStorage.getItem('token')
+  try {
+    console.log(id)
+    const resp = await axios.patch(`https://eduvision.live/api/scholarships/${id}`, unflattenObj, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    if (resp.data.success) {
+      router.push({ name: 'AdminDashboard' })
+    }
+  } catch (err) {
+    console.log('Error updating opportunity', err)
+  }
 }
 
 onMounted(async () => {
   await fetchData()
+  flat_opportunity.value = [flattenObject(opportunity.value)]
 })
 </script>
 <template>
@@ -275,7 +253,9 @@ onMounted(async () => {
         <p class="mr-4">Photo:</p>
         <input type="file" accept=".jpg, .jpeg, .png" multiple />
       </div>
-      <button class="button w-full mx-auto" @click="handleSubmit"><span>Submit</span></button>
+      <button class="button w-full mx-auto" @click="handleSubmit(2)">
+        <span>Submit</span>
+      </button>
     </div>
   </div>
 </template>

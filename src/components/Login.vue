@@ -44,10 +44,8 @@ onMounted(() => {
 </script>
 <template>
   <div class="w-full h-screen">
-    <div
-      class="border-1 p-10 grid grid-cols-2 rounded-md rgbBlock bg-base-100 w-[50%] mx-auto mt-30"
-    >
-      <div class="col-start-1">
+    <div class="border-1 px-30 py-10 rounded-md rgbBlock bg-base-100 w-fit mx-auto mt-30">
+      <div class="">
         <h1 class="text-center text-2xl font-bold">Login</h1>
         <p class="text-center mt-3">Welcome back!!</p>
         <form @submit.prevent="handleSubmit" class="flex flex-col mt-9 items-center gap-10">
@@ -93,7 +91,6 @@ onMounted(() => {
           <button type="submit" class="btn btn-primary">Login</button>
         </form>
       </div>
-      <div class="col-start-2">second item</div>
     </div>
   </div>
 </template>

@@ -1,13 +1,11 @@
-// tailwind.config.js
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: [
-    './index.html',
-    './src/**/*.{vue,js,ts}', // include .vue for class scanning
-  ],
-  darkMode: 'class', // manual toggle via <html class="dark">
-  plugins: [require('daisyui')],
+  darkMode: 'class', // manual control via html.dark
+  content: ['./index.html', './src/**/*.{vue,js}'],
+  plugins: [require('daisyui')], // keep or remove as you use
+  // Optional daisyUI config if you use it:
   daisyui: {
-    themes: ['light', 'dark'], // or your custom list
+    themes: ['light', 'dark'],
+    darkTheme: 'dark',
   },
 }

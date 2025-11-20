@@ -71,7 +71,7 @@ onMounted(() => {
   const loader = new TTFLoader()
 
   loader.load(
-    '/fonts/ttf/NotoSerif-VariableFont_wdth,wght.ttf',
+    '/fonts/ttf/noto-serif.ttf',
     function (ttfData) {
       fontData = new FontLoader().parse(ttfData)
       textMesh = createText(fontData)

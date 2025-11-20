@@ -123,16 +123,15 @@ onMounted(async () => {
   <div class="w-full h-200">
     <div v-if="needVerifyEmail" class="h-full w-full flex items-center justify-center flex-col">
       <p class="text-4xl/relaxed text-center max-w-[70%]">
-        We've sent a verification email to your inbox. Please check your email and follow the
-        instructions to verify your account.
+        We've sent a verification email to your inbox. Please verify your email and log in with the
+        credentials.
       </p>
-      <router-link to="/" class="mx-auto mt-5 button"><span>Back To Home</span></router-link>
+      <router-link to="/login" class="mx-auto mt-5 button"><span>Go To Login</span></router-link>
     </div>
     <div
       v-else
-      class="mx-auto border-1 mt-17 my-auto p-10 w-300 rounded-md bg-base-100 grid grid-cols-2 rgbBlock"
+      class="mx-auto border-1 mt-17 my-auto px-30 py-10 w-fit rounded-md bg-base-100 rgbBlock"
     >
-      <!-- add image here -->
       <div class="col-start-1">
         <h1 class="text-center text-4xl font-extrabold">Create Account</h1>
         <p v-if="errorMsg" class="bg-red-400 text-center mt-[16px] p-5 rounded-lg">

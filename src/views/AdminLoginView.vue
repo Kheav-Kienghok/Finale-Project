@@ -26,12 +26,9 @@ const handleSubmit = async () => {
       'https://eduvision.live/api/admin/login',
       JSON.stringify(loginObj),
     )
-    console.log(resp.data)
     if (resp.data.success) {
       if (!resp.data.data.is_multi_factor) {
         setup_token.value = resp.data.data.setup_token
-        console.log(setup_token)
-
         const verification = await axios.post(
           'https://eduvision.live/api/admin/enable-2fa',
           {},
@@ -41,9 +38,8 @@ const handleSubmit = async () => {
             },
           },
         )
+        errorMsg.value = ''
         qrcode.value = verification.data.data.qr_code_url
-        console.log(qrcode.value)
-        console.log(verification.data)
         loading.value = false
         isAdminLogin.value = false
       }
@@ -52,6 +48,7 @@ const handleSubmit = async () => {
         isVerifyTOTP.value = true
         isAdminLogin.value = false
         loading.value = false
+        errorMsg.value = ''
       }
       // if (resp.data.data.next == '/admin/verify-otp') {
       //   isVerifyTOTP.value = true
@@ -86,7 +83,7 @@ const handleBeforeUnload = (e) => {
 const handleVerify2FA = async () => {
   try {
     loading.value = true
-    console.log(totp.value)
+    errorMsg.value = ''
     const resp = await axios.post(
       'https://eduvision.live/api/admin/verify-otp',
       { otp: totp.value },
@@ -97,6 +94,7 @@ const handleVerify2FA = async () => {
       },
     )
     if (resp.data.success) {
+      localStorage.setItem('token', resp.data.data.token)
       router.push({ name: 'AdminDashboard' })
     }
   } catch (err) {

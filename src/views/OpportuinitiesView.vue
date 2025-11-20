@@ -24,31 +24,14 @@ const filterValidOpportunities = (scholarships) => {
 }
 
 const handleSearch = () => {
-  const query = searchQuery.value.trim().toLowerCase()
-
-  const extractText = (data) => {
-    let text = ''
-
-    if (typeof data === 'string') {
-      text += data.toLowerCase() + ' '
-    } else if (Array.isArray(data)) {
-      data.forEach((item) => {
-        text += extractText(item)
-      })
-    } else if (typeof data === 'object' && data !== null) {
-      Object.values(data).forEach((value) => {
-        text += extractText(value)
-      })
-    }
-
-    return text
-  }
-
+  console.log(searchQuery.value)
   scholarships.value = originalData.value.filter((scholarship) => {
-    const searchableText = extractText(scholarship)
-    return searchableText.includes(query)
+    return scholarship.provider.toLowerCase().includes(searchQuery.value.toLowerCase())
   })
 }
+// computed(() => {
+//   scholarships.value = handleSearch()
+// })
 
 watch(
   () => router.currentRoute.value,
@@ -145,7 +128,7 @@ onMounted(async () => {
     textMat.shininess = 150
     const brand = 'EduVision'
     loader.load(
-      '/fonts/ttf/NotoSerif-VariableFont_wdth,wght.ttf',
+      '/fonts/ttf/noto-serif.ttf',
       function (ttfData) {
         fontData = new FontLoader().parse(ttfData)
         textMesh = createText(fontData)
@@ -190,7 +173,6 @@ onMounted(async () => {
     }
   }
   initBrand3D()
-  console.log(scholarships.value)
   onBeforeUnmount(() => {
     cancelAnimationFrame(animationId)
     if (renderer) {
@@ -232,7 +214,7 @@ onMounted(async () => {
           </form>
         </div>
         <div class="flex justify-evenly border-1 items-center py-5 rounded-lg w-200">
-          <div class="relative">
+          <div class="relative group">
             <input type="checkbox" class="peer hidden" id="sort" />
             <label for="sort" class="cursor-pointer">
               <div class="flex items-center gap-4">
@@ -241,7 +223,7 @@ onMounted(async () => {
               </div>
             </label>
             <ul
-              class="absolute invisible peer-checked:visible w-50 h-fit flex flex-col mt-5 bg-[#793ef9] items-center py-4 rounded-lg"
+              class="absolute invisible group-hover:visible w-50 h-fit flex flex-col top-[100%] left-[50%] -translate-x-[50%] bg-[#793ef9] items-center py-4 rounded-lg"
             >
               <li class="hover:bg-gray-400/80 w-full text-center py-2 cursor-pointer rounded-lg">
                 Newest
@@ -251,8 +233,7 @@ onMounted(async () => {
               </li>
             </ul>
           </div>
-          <div class="relative">
-            <input type="checkbox" class="peer hidden" id="filter" />
+          <div class="relative group">
             <label for="filter" class="cursor-pointer">
               <div class="flex items-center gap-4">
                 <i class="pi pi-filter-fill text-2xl"></i>
@@ -260,7 +241,7 @@ onMounted(async () => {
               </div>
             </label>
             <ul
-              class="absolute invisible peer-checked:visible w-50 h-fit flex flex-col mt-5 bg-[#793ef9] items-center py-4 rounded-lg"
+              class="absolute invisible group-hover:visible w-50 h-fit flex flex-col bg-[#793ef9] items-center py-4 rounded-lg top-[100%] left-[50%] translate-x-[-50%]"
             >
               <li class="hover:bg-gray-400/80 w-full text-center py-2 cursor-pointer rounded-lg">
                 School
@@ -273,7 +254,12 @@ onMounted(async () => {
         </div>
       </div>
     </div>
-    <div v-for="(dat, key, index) in scholarships" class="w-[75%]" :key="dat.id">
+    <div v-if="scholarships.length === 0" class="absolute top-175">
+      <p class="font-corben text-3xl">
+        There is nothing to show. Maybe try to adjust your filter view.
+      </p>
+    </div>
+    <div v-else v-for="(dat, key, index) in scholarships" class="w-[75%]" :key="dat.id">
       <div class="border-1 border-white/50 rounded-lg md:hidden">
         <div class="max-h-[500px] overflow-y-scroll arounded-lg p-6 flex flex-col items-center">
           <img :src="`${dat.photo_url}`" alt="" class="w-[200px] rounded-lg" />
@@ -345,9 +331,6 @@ onMounted(async () => {
 
       <!-- Big display -->
       <div class="md:block relative hidden overscroll-auto h-[900px] mt-70 z-1">
-        <div class="absolute top-20 right-3">
-          <i class="pi pi-heart-fill w-50"></i>
-        </div>
         <div
           v-if="dat.photo_url"
           class="bg-no-repeat blur-[3px] bg-center bg-cover h-full absolute inset-0 -z-3"
