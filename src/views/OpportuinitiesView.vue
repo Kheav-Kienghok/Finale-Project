@@ -105,6 +105,25 @@ const handleDeleteFavorite = async (id) => {
   }
 }
 
+const handleSort = (condition) => {
+  if (condition === 'Newest') {
+    scholarships.value = originalData.value.sort(
+      (a, b) => new Date(b.created_at) - new Date(a.created_at),
+    )
+  }
+  if (condition === 'Oldest') {
+    scholarships.value = originalData.value.sort(
+      (a, b) => new Date(a.created_at) - new Date(b.created_at),
+    )
+  }
+}
+
+const handleFilter = (c) => {
+  scholarships.value = originalData.value.filter(
+    (item) => item.categories && item.categories[0] === c,
+  )
+}
+
 onMounted(async () => {
   await fetchData()
   function initBrand3D() {
@@ -264,11 +283,13 @@ onMounted(async () => {
             >
               <li
                 class="hover:bg-gray-400/80 w-full font-corben text-center py-2 cursor-pointer rounded-lg"
+                @click="handleSort('Newest')"
               >
                 Newest
               </li>
               <li
                 class="hover:bg-gray-400/80 w-full text-center font-corben py-2 cursor-pointer rounded-lg"
+                @click="handleSort('Oldest')"
               >
                 Oldest
               </li>
@@ -284,11 +305,17 @@ onMounted(async () => {
             <ul
               class="absolute font-corben invisible group-hover:visible w-50 h-fit flex flex-col bg-[#793ef9] items-center py-4 rounded-lg top-[100%] left-[50%] translate-x-[-50%]"
             >
-              <li class="hover:bg-gray-400/80 w-full text-center py-2 cursor-pointer rounded-lg">
-                School
+              <li
+                @click="handleFilter('IT')"
+                class="hover:bg-gray-400/80 w-full text-center py-2 cursor-pointer rounded-lg"
+              >
+                IT
               </li>
-              <li class="hover:bg-gray-400/80 w-full text-center py-2 cursor-pointer rounded-lg">
-                Major
+              <li
+                @click="handleFilter('Business')"
+                class="hover:bg-gray-400/80 w-full text-center py-2 cursor-pointer rounded-lg"
+              >
+                Businness
               </li>
             </ul>
           </div>
