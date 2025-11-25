@@ -79,6 +79,15 @@ function unflattenObject(flat) {
   return result
 }
 
+const uploaded_file = ref(null)
+const previewUrl = ref(null)
+const onFileChange = (e) => {
+  const file = e.target.files[0]
+  if (!file) return
+  uploaded_file.value = file
+  previewUrl.value = URL.createObjectURL(file)
+}
+
 const isEditingTitle = ref(false)
 const isEditingDeadline = ref(false)
 const isEditingProvider = ref(false)
@@ -91,12 +100,20 @@ const isEditingOfficialLink = ref(false)
 
 const handleSubmit = async () => {
   const unflattenObj = unflattenObject(flat_opportunity.value[0])
+  console.log(unflattenObj)
+
+  const formData = new FormData()
+  formData.append('data', JSON.stringify(unflattenObj))
+
+  if (uploaded_file.value) {
+    formData.append('photo_url', uploaded_file.value)
+  }
   const token = localStorage.getItem('token')
   try {
-    console.log(id)
-    const resp = await axios.patch(`https://eduvision.live/api/scholarships/${id}`, unflattenObj, {
+    const resp = await axios.patch(`https://eduvision.live/api/scholarships/${id}`, formData, {
       headers: {
         Authorization: `Bearer ${token}`,
+        'Content-Type': 'multipart/form-data',
       },
     })
     if (resp.data.success) {
@@ -275,9 +292,14 @@ onMounted(async () => {
           accept=".jpg, .jpeg, .png"
           multiple
           class="w-150 border-[#605efe] focus:border-[#605efe] focus:outline-none focus:ring-0"
+          @change="onFileChange"
         />
       </div>
-      <button class="button w-full mx-auto" @click="handleSubmit(2)">
+      <div v-if="previewUrl" class="mx-auto mt-5">
+        <p>Preview:</p>
+        <img :src="previewUrl" alt="Preview" width="500" />
+      </div>
+      <button class="button w-full mx-auto" @click="handleSubmit()">
         <span>Submit</span>
       </button>
     </div>

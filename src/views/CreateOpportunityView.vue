@@ -11,6 +11,7 @@ const eligibility = ref('')
 const requireddocs = ref('')
 const officiallinks = ref('')
 const deadline = ref('')
+const category = ref('')
 
 const successMsg = ref('')
 const errorMsg = ref('')
@@ -24,6 +25,7 @@ const handleSubmit = async () => {
     title: title.value,
     provider: provider.value,
     description: description.value,
+    categories: [category.value],
     institution_info: [
       {
         institution: schoolname.value,
@@ -36,7 +38,9 @@ const handleSubmit = async () => {
     },
     official_link: officiallinks.value,
     deadline_end: deadline.value,
+    category: category.value,
   }
+  console.log(payload)
   const token = localStorage.getItem('token')
   try {
     const resp = await axios.post(`https://eduvision.live/api/scholarships`, payload, {
@@ -56,6 +60,7 @@ const handleSubmit = async () => {
       requireddocs.value = ''
       officiallinks.value = ''
       deadline.value = ''
+      category.value = ''
       setTimeout(() => {
         successMsg.value = ''
       }, 3000)
@@ -90,7 +95,13 @@ const handleSubmit = async () => {
     </div>
     <div class="row-start-2 col-start-2">
       <label for="deadline" class="block mb-3">Deadline <span class="text-red-500">*</span></label>
-      <input type="date" v-model="date" id="deadline" required class="input input-primary w-full" />
+      <input
+        type="date"
+        v-model="deadline"
+        id="deadline"
+        required
+        class="input input-primary w-full"
+      />
     </div>
     <div class="row-start-3 col-start-1">
       <label for="provider" class="block mb-3">Provider <span class="text-red-500">*</span></label>
@@ -168,7 +179,7 @@ const handleSubmit = async () => {
         class="input input-primary w-full"
       />
     </div>
-    <div class="row-start-8 col-span-2 w-full">
+    <div class="row-start-8 col-start-1 w-full">
       <label for="officiallinks" class="block mb-3"
         >Official Link <span class="text-red-500">*</span></label
       >
@@ -176,6 +187,16 @@ const handleSubmit = async () => {
         type="text"
         v-model="officiallinks"
         id="officiallinks"
+        required
+        class="input input-primary w-full"
+      />
+    </div>
+    <div class="row-start-8 col-start-2 w-full">
+      <label for="category" class="block mb-3">Category <span class="text-red-500">*</span></label>
+      <input
+        type="text"
+        v-model="category"
+        id="category"
         required
         class="input input-primary w-full"
       />

@@ -1,6 +1,7 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+const route = useRoute()
 const router = useRouter()
 import axios from 'axios'
 const allScholarships = ref([])
@@ -15,7 +16,6 @@ const handleDelete = async (id) => {
   const confirmed = confirm('Are you sure you want to delete this? This action cannot be undone.')
   if (confirmed) {
     try {
-      console.log(id)
       const resp = await axios.delete(`https://eduvision.live/api/scholarships/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -31,6 +31,16 @@ const handleDelete = async (id) => {
     return
   }
 }
+watch(
+  () => route.path,
+  (newPath, oldPath) => {
+    if (oldPath === '/admin/login') {
+      console.log(newPath)
+      console.log(oldPath)
+      window.location.reload()
+    }
+  },
+)
 
 onMounted(async () => {
   await fetchData()

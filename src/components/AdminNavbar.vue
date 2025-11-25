@@ -9,6 +9,7 @@ if (token !== '') {
 const handleLogout = () => {
   localStorage.removeItem('token')
   name.value = ''
+  window.location.reload()
 }
 </script>
 <template>

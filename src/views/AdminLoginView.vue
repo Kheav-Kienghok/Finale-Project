@@ -80,6 +80,11 @@ const handleSubmit = async () => {
 //   e.preventDefault()
 //   e.returnValue = ''
 // }
+const token = localStorage.getItem('token')
+console.log(token)
+if (token) {
+  router.push({ name: 'AdminDashboard' })
+}
 const handleVerify2FA = async () => {
   try {
     loading.value = true
@@ -95,7 +100,8 @@ const handleVerify2FA = async () => {
     )
     if (resp.data.success) {
       localStorage.setItem('token', resp.data.data.token)
-      router.push({ name: 'AdminDashboard' })
+      // router.push({ name: 'AdminDashboard' })
+      window.location.reload()
     }
   } catch (err) {
     loading.value = false
